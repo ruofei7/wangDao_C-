@@ -1,0 +1,210 @@
+#include<string.h>
+#include<iostream>
+using std::cout;
+using std::endl;
+using std::cin;
+class String
+{
+public:
+    String();
+    String(const char*);
+    String(const String&);
+    ~String();
+    String &operator=(const String&);
+    String &operator=(const char*);
+
+    String &operator+=(const String&);
+    String &operator+=(const char*);
+
+    char &operator[](std::size_t index);//非const对
+    const char &operator[](std::size_t index)const;//const对象调用这个,eg.const String。
+
+    std::size_t size() const;
+    const char* c_str() const;//转换成C风格的字符串
+
+    friend bool operator ==(const String &,const String &);
+    friend bool operator !=(const String &,const String &);
+
+    friend bool operator<(const String &,const String &);
+    friend bool operator>(const String&,const String&);
+    friend bool operator<=(const String&,const String &);
+    friend bool operator>=(const String &,const String &);
+
+    friend std::ostream &operator<<(std::ostream &os,const String &s);
+    friend std::istream &operator>>(std::istream &is,String &s);
+private:
+    char *_pstr;
+};
+String operator+(const String &,const String &);
+String operator+(const String&,const char *);
+String operator+(const char*,const String&);
+//String operrator+(const char*,const char*);//error,重载操作符必须具有一个类类型或者是枚举类型的操作数
+String ::String()
+{
+   _pstr=new char[10]();
+}
+String ::String(const char *pstr)
+    : _pstr(new char[strlen(pstr) + 1]())
+{
+    strcpy(_pstr, pstr);
+}
+String ::String(const String &rstr)
+{
+    *this = rstr;
+}
+String ::~String()
+{
+    if (_pstr)
+        delete[] _pstr;
+}
+String &String::operator=(const String &rstr)
+{
+    _pstr = new char[strlen(rstr._pstr) + 1]();
+    strcpy(_pstr, rstr._pstr);
+    return *this;
+}
+String &String::operator=(const char *pstr)
+{
+    _pstr = new char[strlen(pstr) + 1]();
+    strcpy(_pstr, pstr);
+    return *this;
+}
+String &String::operator+=(const String &rstr)
+{
+    char *tempString = new char[strlen(rstr._pstr) + strlen(this->_pstr) + 1]();
+    sprintf(tempString, "%s%s", _pstr, rstr._pstr);
+    if (_pstr)
+        delete[] _pstr;
+    _pstr = tempString;
+    return *this;
+}
+String &String::operator+=(const char *pstr)
+{
+    char *tempString = new char[strlen(pstr) + strlen(this->_pstr) + 1]();
+    sprintf(tempString, "%s%s", _pstr, pstr);
+    if (_pstr)
+        delete[] _pstr;
+    _pstr = tempString;
+    return *this;
+}
+char &String::operator[](std::size_t index)
+{
+    return this->_pstr[index];
+}
+const char &String::operator[](std::size_t index) const
+{
+    return this->_pstr[index];
+}
+std::size_t String::size() const
+{
+    return strlen(_pstr);
+}
+const char *String::c_str() const //将String转换成C风格的字符串
+{
+    return _pstr;
+}
+bool operator==(const String &lhs, const String &rhs)
+{
+    if (0 == strcmp(lhs._pstr, rhs._pstr))
+        return true;
+    else
+    {
+        return false;
+    }
+}
+bool operator!=(const String &lhs, const String &rhs)
+{
+    return !(lhs == rhs);
+}
+bool operator<(const String &lhs, const String &rhs)
+{
+    if (strcmp(lhs._pstr, rhs._pstr) < 0)
+        return true;
+    else
+    {
+        return false;
+    }
+}
+bool operator>(const String &lhs, const String &rhs)
+{
+    if (strcmp(lhs._pstr, rhs._pstr) > 0)
+        return true;
+    else
+    {
+        return false;
+    }
+}
+bool operator<=(const String &lhs, const String &rhs)
+{
+    if (strcmp(lhs._pstr, rhs._pstr) <= 0)
+        return true;
+    else
+    {
+        return false;
+    }
+}
+bool operator>=(const String &lhs, const String &rhs)
+{
+    if (strcmp(lhs._pstr, rhs._pstr) >= 0)
+        return true;
+    else
+    {
+        return false;
+    }
+}
+std::ostream &operator<<(std::ostream &os, const String &s)
+{
+    os << s._pstr;
+    return os;
+}
+std::istream &operator>>(std::istream &is, String &s)
+{
+    char str[2]={0};
+    bzero(s._pstr,strlen(s._pstr));
+    //while(is>>str[0],str[0]!='#'&&!is.eof())//cin读到' ','\n','\t'，不会读进去
+    while(str[0]=cin.get(),str[0]!='\n')//cin.get()可以读到' ','\n','\t'，不会读进去
+    {
+        s+=str;
+        bzero(str,sizeof(str));
+    }
+    return is;
+}
+String operator+(const String &lhs, const String &rhs)
+{
+    
+    char *pstr=new char[strlen(lhs.c_str())+strlen(rhs.c_str())+1]();
+    sprintf(pstr,"%s%s",lhs.c_str(),rhs.c_str());
+    return String(pstr);
+}
+String operator+(const String& lhs,const char *str)
+{
+    char *pstr=new char[strlen(lhs.c_str())+strlen(str)+1]();
+    sprintf(pstr,"%s%s",lhs.c_str(),str);
+    return String(pstr);
+}
+String operator+(const char* str,const String& rhs)
+{
+    char *pstr=new char[strlen(pstr)+strlen(rhs.c_str())+1]();
+    sprintf(pstr,"%s%s",str,rhs.c_str());
+    return String(pstr);
+}
+void test0()
+{
+    String str1,str2;
+    cin>>str1>>str2;
+    cout<<"str1="<<str1<<endl;
+    cout<<"str2="<<str2<<endl;
+    str1+=str2;
+    cout<<"str1+=str2="<<str1<<endl;
+}
+void test1(char *str)
+{
+    cout<<"strlen(str)"<<strlen(str)<<endl;
+    cout<<"sizeof(str)"<<sizeof(str)<<endl;
+}
+int main()
+{
+    test0();
+    return 0;
+    
+}

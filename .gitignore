@@ -1,0 +1,7 @@
+
+*.o
+*.log
+*.txt
+*.log.*
+*.git
+*.vscode
