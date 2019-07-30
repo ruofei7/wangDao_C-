@@ -5,3 +5,4 @@
 *.log.*
 *.git
 *.vscode
+*.gitignore
